@@ -1,0 +1,257 @@
+{% extends 'imdb/base.html' %}
+
+<!-- disable prettier -->
+{% block title %}IMDb clone{% endblock %}
+
+<!-- disable prettier -->
+{% block content %}
+<article class="py-4">
+    <h1 class="my-6 text-[2rem] font-medium leading-10 text-orange">
+        Best movies
+    </h1>
+    <section class="mb-20 grid grid-cols-6 gap-3">
+        {% for movie in movies %}
+        <article class="flex w-full flex-col items-center gap-1 bg-black-26">
+            <a
+                href="{{ movie.url_detail }}"
+                class="aspect-[185/275] max-h-[285px] w-full"
+            >
+                <img
+                    class="h-full w-full rounded"
+                    src="{{ movie.poster.url }}"
+                    alt="{{ movie }}"
+                />
+            </a>
+            <header class="flex w-full items-center px-2">
+                <svg
+                    class="mr-[3px]"
+                    width="12"
+                    height="12"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    role="presentation"
+                    fill="#F5C518"
+                >
+                    <path
+                        d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"
+                    ></path>
+                </svg>
+                {{ movie.rating }}
+            </header>
+            <a
+                href="{{ movie.url_detail }}"
+                class="h-12 w-full px-2"
+            >
+                <span class="text-base leading-none">{{ movie }}</span>
+            </a>
+
+            <div class="flex w-full flex-col gap-2 py-2 px-2">
+                <a
+                    href="#"
+                    class="mt-3 flex h-9 w-full items-center justify-center rounded bg-[rgba(255,255,255,.08)] text-blue-87"
+                >
+                    <span class="text-[14px] leading-none">Watch now</span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="rgb(87, 153, 239)"
+                        role="presentation"
+                    >
+                        <path
+                            d="M16 16.667H8A.669.669 0 0 1 7.333 16V8c0-.367.3-.667.667-.667h3.333c.367 0 .667-.3.667-.666C12 6.3 11.7 6 11.333 6h-4C6.593 6 6 6.6 6 7.333v9.334C6 17.4 6.6 18 7.333 18h9.334C17.4 18 18 17.4 18 16.667v-4c0-.367-.3-.667-.667-.667-.366 0-.666.3-.666.667V16c0 .367-.3.667-.667.667zm-2.667-10c0 .366.3.666.667.666h1.727L9.64 13.42a.664.664 0 1 0 .94.94l6.087-6.087V10c0 .367.3.667.666.667.367 0 .667-.3.667-.667V6h-4c-.367 0-.667.3-.667.667z"
+                        ></path>
+                    </svg>
+                </a>
+                {% if movie.trailer %}
+                <a
+                    href="https://youtu.be/{{ movie.trailer }}"
+                    target="_blank"
+                    class="mx-auto flex h-9 w-fit items-center justify-center rounded px-4 hover:bg-[rgba(255,255,255,.08)]"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        role="presentation"
+                    >
+                        <path
+                            d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82z"
+                        ></path>
+                    </svg>
+                    <span class="text-base leading-none">Trailer</span>
+                </a>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {%if user.is_authenticated and user.watchlist.exists %}
+    <section>
+        <h2
+            class="relative mb-4 flex items-center pl-4 text-xl before:absolute before:h-full before:w-1 before:-translate-x-4 before:rounded-sm before:bg-orange"
+        >
+            From your Watchlist
+            <svg
+                class="ml-2 w-5"
+                width="24"
+                height="24"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="white"
+                role="presentation"
+            >
+                <path
+                    d="M5.622.631A2.153 2.153 0 0 0 5 2.147c0 .568.224 1.113.622 1.515l8.249 8.34-8.25 8.34a2.16 2.16 0 0 0-.548 2.07c.196.74.768 1.317 1.499 1.515a2.104 2.104 0 0 0 2.048-.555l9.758-9.866a2.153 2.153 0 0 0 0-3.03L8.62.61C7.812-.207 6.45-.207 5.622.63z"
+                ></path>
+            </svg>
+        </h2>
+        <p class="mb-4 text-sm text-[rgba(255,255,255,.8)]">
+            TV shows and movies just for you
+        </p>
+        <section class="mb-20 grid grid-cols-6 gap-3">
+            {% for movie in user.watchlist.all %}
+            <article
+                class="flex w-full flex-col items-center gap-1 bg-black-26"
+            >
+                <a
+                    href="{{ movie.url_detail }}"
+                    class="aspect-[185/275] max-h-[285px] w-full"
+                >
+                    <img
+                        class="h-full w-full rounded"
+                        src="{{ movie.poster.url }}"
+                        alt="{{ movie }}"
+                    />
+                </a>
+                <header class="flex w-full items-center px-2">
+                    <svg
+                        class="mr-[3px]"
+                        width="12"
+                        height="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        role="presentation"
+                        fill="#F5C518"
+                    >
+                        <path
+                            d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"
+                        ></path>
+                    </svg>
+                    {{ movie.rating }}
+                </header>
+                <a
+                    href="{{ movie.url_detail }}"
+                    class="h-12 w-full px-2"
+                >
+                    <span class="text-base leading-none">{{ movie }}</span>
+                </a>
+
+                <div class="flex w-full flex-col gap-2 py-2 px-2">
+                    <a
+                        href="#"
+                        class="mt-3 flex h-9 w-full items-center justify-center rounded bg-[rgba(255,255,255,.08)] text-blue-87"
+                    >
+                        <span class="text-[14px] leading-none">Watch now</span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="rgb(87, 153, 239)"
+                            role="presentation"
+                        >
+                            <path
+                                d="M16 16.667H8A.669.669 0 0 1 7.333 16V8c0-.367.3-.667.667-.667h3.333c.367 0 .667-.3.667-.666C12 6.3 11.7 6 11.333 6h-4C6.593 6 6 6.6 6 7.333v9.334C6 17.4 6.6 18 7.333 18h9.334C17.4 18 18 17.4 18 16.667v-4c0-.367-.3-.667-.667-.667-.366 0-.666.3-.666.667V16c0 .367-.3.667-.667.667zm-2.667-10c0 .366.3.666.667.666h1.727L9.64 13.42a.664.664 0 1 0 .94.94l6.087-6.087V10c0 .367.3.667.666.667.367 0 .667-.3.667-.667V6h-4c-.367 0-.667.3-.667.667z"
+                            ></path>
+                        </svg>
+                    </a>
+                    {% if movie.trailer %}
+                    <a
+                        href="https://youtu.be/{{ movie.trailer }}"
+                        target="_blank"
+                        class="mx-auto flex h-9 w-fit items-center justify-center rounded px-4 hover:bg-[rgba(255,255,255,.08)]"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            role="presentation"
+                        >
+                            <path
+                                d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82z"
+                            ></path>
+                        </svg>
+                        <span class="text-base leading-none">Trailer</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+    </section>
+    {% endif %}
+</article>
+
+<article class="py-4">
+    <h1 class="my-6 text-[2rem] font-medium leading-10 text-orange">
+        Directors
+    </h1>
+    <section>
+        <h2
+            class="relative mb-4 flex items-center pl-4 text-xl before:absolute before:h-full before:w-1 before:-translate-x-4 before:rounded-sm before:bg-orange"
+        >
+            Born today
+            <svg
+                class="ml-2 w-5"
+                width="24"
+                height="24"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="white"
+                role="presentation"
+            >
+                <path
+                    d="M5.622.631A2.153 2.153 0 0 0 5 2.147c0 .568.224 1.113.622 1.515l8.249 8.34-8.25 8.34a2.16 2.16 0 0 0-.548 2.07c.196.74.768 1.317 1.499 1.515a2.104 2.104 0 0 0 2.048-.555l9.758-9.866a2.153 2.153 0 0 0 0-3.03L8.62.61C7.812-.207 6.45-.207 5.622.63z"
+                ></path>
+            </svg>
+        </h2>
+        <div class="grid grid-cols-6 gap-8">
+            {% for director in directors %}
+            <a
+                class="flex flex-col items-center gap-1"
+                href="{{ director.url_detail }}"
+            >
+                <img
+                    class="aspect-square max-h-40 w-full max-w-[10rem] rounded-full object-cover"
+                    src="{{ director.portrait.url }}"
+                    alt="{{ director }}"
+                />
+                <h3 class="mt-3 text-center text-base">{{ director }}</h3>
+                <span class="flex items-center text-xs text-[#FFFFFFB3]">
+                    <svg
+                        class="mr-[3px]"
+                        width="12"
+                        height="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        role="presentation"
+                        fill="#F5C518"
+                    >
+                        <path
+                            d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"
+                        ></path>
+                    </svg>
+                    {{ director.rating_avg }}
+                </span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+</article>
+{% endblock %}

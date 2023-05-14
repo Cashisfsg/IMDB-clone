@@ -1,0 +1,463 @@
+{% extends 'imdb/base.html' %} {% load static %}
+
+<!-- disable prettier -->
+{% block title %}{{ movie }}{% endblock %}
+
+<!-- disable prettier -->
+{% block content %}
+<div class="h-12 w-full"></div>
+<article>
+    <header class="mb-4 flex">
+        <section class="w-full">
+            <h1 class="mb-2 text-[3rem] leading-[3.125rem]">{{ movie }}</h1>
+            <p class="mb-1 text-sm text-[rgba(255,255,255,.7)]">
+                Original title: {{ movie }}
+            </p>
+            <span class="text-sm text-[rgba(255,255,255,.7)]">
+                {{ movie.year }} ⋅ {{ movie.duration }}
+            </span>
+        </section>
+        <section
+            class="flex w-fit gap-2 self-end whitespace-nowrap text-xs font-semibold text-[rgba(255,255,255,.7)]"
+        >
+            <div>
+                <p class="mb-2 text-center tracking-[.17em]">IMDb RATING</p>
+                <div
+                    class="flex rounded px-2 py-1 hover:bg-[rgba(255,255,255,.08)]"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="#F5C518"
+                        role="presentation"
+                    >
+                        <path
+                            d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z"
+                        ></path>
+                    </svg>
+                    <div>
+                        <p class="flex items-center">
+                            <span class="text-[20px] text-white">
+                                {{ movie.rating }}
+                            </span>
+                            <span class="text-base">/10</span>
+                        </p>
+                        <p class="text-xs">{{ movie.views }}</p>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <div>
+                <p class="mb-2 text-center tracking-[.17em]">YOUR RATING</p>
+                <button
+                    id="vote-popup-open-button"
+                    class="flex items-center justify-center rounded py-1 px-2 hover:bg-[rgba(255,255,255,.08)]"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="#5799EF"
+                        role="presentation"
+                    >
+                        <path
+                            fill="none"
+                            d="M0 0h24v24H0V0z"
+                        ></path>
+                        <path
+                            d="M19.65 9.04l-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+                        ></path>
+                    </svg>
+                    <span class="text-[20px]">Rate</span>
+                </button>
+            </div>
+            {% endif %}
+            <div>
+                <p class="mb-2 text-center tracking-[.17em]">POPULARITY</p>
+            </div>
+        </section>
+    </header>
+    <section class="mb-2 flex h-[420px] w-full">
+        <img
+            class="h-full w-[22.5%]"
+            src="{{ movie.poster.url }}"
+            alt="{{ movie }}"
+        />
+        {% with trailer=movie.trailer|default_if_none:"TuAtfabPLn0" %}
+        <iframe
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/{{ trailer }}"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+        >
+        </iframe>
+        {% endwith %}
+        <div class="h-full min-w-[15%] bg-[rgba(255,255,255,.08)]"></div>
+    </section>
+</article>
+
+<section class="flex justify-between">
+    <article class="w-1/2">
+        <ul class="flex gap-3 py-4">
+            <li>
+                <a
+                    href="#"
+                    class="rounded-[1rem] border border-solid border-[rgba(255,255,255,.32)] py-1 px-3 text-sm hover:bg-[rgba(255,255,255,.08)]"
+                >
+                    Horror
+                </a>
+            </li>
+            <li>
+                <a
+                    href="#"
+                    class="rounded-[1rem] border border-solid border-[rgba(255,255,255,.32)] py-1 px-3 text-sm hover:bg-[rgba(255,255,255,.08)]"
+                >
+                    Thriller
+                </a>
+            </li>
+        </ul>
+        {% if movie.plot %}
+        <p class="pb-4">{{ movie.plot.read.decode }}</p>
+        {% endif %}
+        <hr />
+        <p class="py-4">
+            Director&nbsp;
+            <a
+                href="{{ movie.director.url_detail }}"
+                class="text-blue-87"
+            >
+                {{ movie.director }}
+            </a>
+        </p>
+    </article>
+    {% if user.is_authenticated %}
+    <a
+        href="{% url 'imdb:change-watchlist' pk=movie.id %}"
+        class="flex h-max w-3/12 justify-center gap-3 self-center rounded bg-black-18 py-2 px-4 hover:bg-black-26"
+    >
+        {% if movie in user.watchlist.all %}
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="white"
+            role="presentation"
+        >
+            <path
+                fill="none"
+                d="M0 0h24v24H0V0z"
+            ></path>
+            <path
+                d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"
+            ></path>
+        </svg>
+        In watchlist {% else %} + Add to watchlist {% endif %}
+    </a>
+    {% endif %}
+</section>
+
+<section class="flex gap-8">
+    <article class="w-1/2">
+        <h2
+            class="relative mb-4 flex items-center pl-4 text-xl before:absolute before:h-full before:w-1 before:-translate-x-4 before:rounded-sm before:bg-orange"
+        >
+            More like this
+        </h2>
+        <section class="grid grid-cols-3 gap-3">
+            {% for movie in movie.director.movies.all|slice:'3' %}
+            <article
+                class="flex w-full flex-col items-center gap-1 bg-black-26"
+            >
+                <a
+                    href="{{ movie.url_detail }}"
+                    class="aspect-[185/275] max-h-[285px] w-full"
+                >
+                    <img
+                        class="h-full w-full rounded"
+                        src="{{ movie.poster.url }}"
+                        alt="{{ movie }}"
+                    />
+                </a>
+                <header class="flex w-full items-center px-2">
+                    <svg
+                        class="mr-[3px]"
+                        width="12"
+                        height="12"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        role="presentation"
+                        fill="#F5C518"
+                    >
+                        <path
+                            d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926 5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581 0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28 1.262 1.023 2.26 2.09 1.585L12 20.099z"
+                        ></path>
+                    </svg>
+                    {{ movie.rating }}
+                </header>
+                <a
+                    href="{{ movie.url_detail }}"
+                    class="h-12 w-full px-2"
+                >
+                    <span class="text-base leading-none">{{ movie }}</span>
+                </a>
+
+                <div class="flex w-full flex-col gap-2 py-2 px-2">
+                    <a
+                        href="#"
+                        class="mt-3 flex h-9 w-full items-center justify-center rounded bg-[rgba(255,255,255,.08)] text-blue-87"
+                    >
+                        <span class="text-[14px] leading-none">Watch now</span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="rgb(87, 153, 239)"
+                            role="presentation"
+                        >
+                            <path
+                                d="M16 16.667H8A.669.669 0 0 1 7.333 16V8c0-.367.3-.667.667-.667h3.333c.367 0 .667-.3.667-.666C12 6.3 11.7 6 11.333 6h-4C6.593 6 6 6.6 6 7.333v9.334C6 17.4 6.6 18 7.333 18h9.334C17.4 18 18 17.4 18 16.667v-4c0-.367-.3-.667-.667-.667-.366 0-.666.3-.666.667V16c0 .367-.3.667-.667.667zm-2.667-10c0 .366.3.666.667.666h1.727L9.64 13.42a.664.664 0 1 0 .94.94l6.087-6.087V10c0 .367.3.667.666.667.367 0 .667-.3.667-.667V6h-4c-.367 0-.667.3-.667.667z"
+                            ></path>
+                        </svg>
+                    </a>
+                    {% if movie.trailer %}
+                    <a
+                        href="https://youtu.be/{{ movie.trailer }}"
+                        target="_blank"
+                        class="mx-auto flex h-9 w-fit items-center justify-center rounded px-4 hover:bg-[rgba(255,255,255,.08)]"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            role="presentation"
+                        >
+                            <path
+                                d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82z"
+                            ></path>
+                        </svg>
+                        <span class="text-base leading-none">Trailer</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+    </article>
+
+    {% if movie.comments.exists %}
+    <article class="w-1/2">
+        <h2
+            class="relative mb-4 flex items-center pl-4 text-xl before:absolute before:h-full before:w-1 before:-translate-x-4 before:rounded-sm before:bg-orange"
+        >
+            Comments
+        </h2>
+        <section>
+            {% for comment in movie.comments.all|dictsortreversed:'published' %}
+            <div class="mb-8 flex gap-4">
+                {% if comment.author.addon.avatar %}
+                <img
+                    class="h-12 w-12 rounded-full"
+                    src="{{ comment.author.addon.avatar.url }}"
+                    alt="{{ comment.author }}"
+                />
+                {% else %}
+                <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 70 70"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <circle
+                        cx="35"
+                        cy="35"
+                        r="35"
+                        fill="white"
+                    />
+                    <path
+                        d="M34.9524 70C15.6305 70.0018 -0.0753237 54.2415 0.000271752 34.9298C0.0776671 15.5786 15.7241 -0.0341429 35.0046 5.60763e-05C54.3588 0.036055 69.944 15.593 69.9998 34.937C70.0574 54.3045 54.3678 70 34.9524 70ZM11.2442 57.5552C24.1494 71.3212 46.1603 71.0656 58.7145 57.5642C58.4499 57.2582 58.198 56.9306 57.9082 56.639C56.6014 55.325 55.0535 54.3369 53.3814 53.5917C51.1964 52.6179 48.9447 51.7917 46.738 50.8666C45.6923 50.4274 44.6466 49.9648 43.6638 49.4032C42.5425 48.7642 41.8153 47.8031 41.7829 46.4315C41.7577 45.3245 41.7217 44.2158 41.6713 43.1088C41.6372 42.3888 41.8333 41.7714 42.2815 41.1936C43.9842 38.9887 44.8716 36.485 44.8878 33.6915C44.8896 33.2523 45.0731 32.9859 45.4043 32.7249C46.1423 32.1399 46.7974 31.4505 46.9954 30.4984C47.2078 29.476 47.359 28.4356 47.4562 27.3935C47.5354 26.5457 47.4436 25.7177 46.3655 25.6295C46.5167 24.3497 46.7164 23.1672 46.7866 21.9792C46.927 19.5529 46.6642 17.1824 45.4421 15.0152C44.3892 13.1487 42.8017 12.1245 40.631 12.0417C40.343 12.0309 40.0479 11.9427 39.7725 11.8473C37.0222 10.9023 34.182 10.6125 31.3508 11.1777C25.8395 12.2757 22.5421 17.0132 23.2045 22.6524C23.3197 23.6262 23.505 24.5909 23.6688 25.6349C22.9129 25.6745 22.4683 26.1101 22.4827 26.8301C22.5223 28.9702 22.5619 31.1337 24.4554 32.6439C24.9288 33.0219 25.0494 33.4971 25.098 34.0551C25.1663 34.856 25.2581 35.6588 25.3859 36.4526C25.6847 38.3173 26.7719 39.8059 27.7474 41.352C27.9886 41.7354 28.1848 42.2178 28.2028 42.6624C28.2514 43.8882 28.2028 45.1175 28.1758 46.3451C28.1488 47.5763 27.5836 48.5266 26.5775 49.2088C26.1077 49.5274 25.6271 49.8496 25.1088 50.0692C23.8704 50.5966 22.6123 51.0826 21.3524 51.5559C18.7425 52.5387 16.1579 53.5719 13.8378 55.1594C12.8659 55.8236 11.9677 56.5634 11.2442 57.5552Z"
+                        fill="#D0CFCF"
+                    />
+                </svg>
+                {% endif %}
+                <p
+                    class="self-center whitespace-nowrap py-2 text-sm text-orange"
+                >
+                    <span class="whitespace-normal text-base text-white">
+                        {{ comment.author }} ({{ comment.published|timesince }}
+                        ago):
+                    </span>
+
+                    {{ comment.text }}
+                </p>
+            </div>
+            {% endfor %} {% if user.is_authenticated %}
+            <form
+                class="flex flex-col gap-3 text-lg font-medium text-orange"
+                action="{% url 'imdb:add-new-comment' pk=movie.id %}"
+                method="post"
+            >
+                {% csrf_token %} {{ mcf }}
+                <button
+                    class="w-max rounded bg-orange py-2 px-4 text-lg font-normal text-black-26 hover:border-[1px] hover:border-orange hover:bg-transparent hover:text-orange"
+                    type="submit"
+                >
+                    Leave a comment
+                </button>
+            </form>
+            {% endif %}
+        </section>
+    </article>
+    {% endif %}
+</section>
+<dialog
+    class="max-w-md rounded-lg bg-black-26 pb-4"
+    id="vote-for-rating"
+>
+    <div class="zebra relative flex h-14 w-full items-center justify-end p-1">
+        <svg
+            class="absolute bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2"
+            xmlns="http://www.w3.org/2000/svg"
+            width="85"
+            height="81"
+            class="ipc-rating-display__star"
+            viewBox="0 0 85 81"
+            fill="rgb(87, 153, 239)"
+            role="presentation"
+        >
+            <path
+                d="M29.4278383,26.4913549 L2.77970363,28.6432143 L2.63541119,28.6580541 C0.066865676,28.979767 -0.941953299,32.2222005 1.05754936,33.9345403 L21.3502824,51.3123553 L15.1650027,77.2797478 L15.1355051,77.4163845 C14.6437005,79.9569202 17.4230421,81.9201545 19.6736611,80.5499671 L42.5,66.6529451 L65.3263389,80.5499671 L65.447392,80.6201968 C67.7156822,81.8722123 70.4448402,79.8400226 69.8349973,77.2797478 L63.6489629,51.3123553 L83.9424506,33.9345403 L84.0504483,33.8378644 C85.9390285,32.0703808 84.8461128,28.855226 82.2202964,28.6432143 L55.571407,26.4913549 L45.2865041,1.85440279 C44.2543406,-0.618134262 40.7456594,-0.618134262 39.7134959,1.85440279 L29.4278383,26.4913549 Z"
+            ></path>
+        </svg>
+        <button
+            id="vote-popup-close-button"
+            class="h-12 w-12 rounded-full hover:bg-red-400"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                class="mx-auto"
+                viewBox="0 0 24 24"
+                fill="white"
+                role="presentation"
+            >
+                <path
+                    fill="none"
+                    d="M0 0h24v24H0V0z"
+                ></path>
+                <path
+                    d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"
+                ></path>
+            </svg>
+            <p
+                id="rating-value"
+                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 text-3xl text-white"
+            ></p>
+        </button>
+    </div>
+
+    <div class="px-8">
+        <h6
+            class="mb-1 pt-12 text-center text-xs font-semibold uppercase tracking-[.17rem] text-orange"
+        >
+            rate this
+        </h6>
+        <p class="mb-3 text-center text-xl text-white">{{ movie }}</p>
+
+        <form
+            class="flex flex-col items-center"
+            name="voteForm"
+            action=""
+        >
+            <!-- disable prettier -->
+            {% csrf_token %}
+            <fieldset class="flex flex-row-reverse justify-center gap-1">
+                <!-- disable prettier -->
+                {% for rate in '0123456789'|make_list reversed %}
+                <!-- disable prettier -->
+                {% load mathfilters %}
+                <!-- disable prettier -->
+                {% with max_rate=11 %}
+                <input
+                    type="radio"
+                    id="rate-{{ max_rate|sub:forloop.counter }}"
+                    name="rating"
+                    value="{{ max_rate|sub:forloop.counter }}"
+                    required
+                />
+                <label
+                    class="mb-8 cursor-pointer"
+                    for="rate-{{ max_rate|sub:forloop.counter }}"
+                >
+                    {% endwith %}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="rgb(87, 153, 239)"
+                        role="presentation"
+                    >
+                        <path
+                            fill="none"
+                            d="M0 0h24v24H0V0z"
+                        ></path>
+                        <path
+                            d="M19.65 9.04l-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+                        ></path>
+                        <path
+                            fill="none"
+                            d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5z"
+                        ></path>
+                    </svg>
+                </label>
+                {% endfor %}
+            </fieldset>
+            <button
+                type="submit"
+                class="w-max rounded bg-orange py-2 px-4 text-lg font-normal text-black-26 hover:border-[1px] hover:border-orange hover:bg-transparent hover:text-orange"
+            >
+                Rate
+            </button>
+        </form>
+    </div>
+</dialog>
+<script>
+    const votePopupOpenButton = document.getElementById(
+        "vote-popup-open-button"
+    );
+    const voteForRatingPopup = document.getElementById("vote-for-rating");
+
+    votePopupOpenButton.onclick = () => {
+        voteForRatingPopup.showModal();
+    };
+
+    const votePopupCloseButton = document.getElementById(
+        "vote-popup-close-button"
+    );
+
+    votePopupCloseButton.onclick = () => {
+        voteForRatingPopup.close();
+    };
+
+    const radio = document.voteForm.rating;
+
+    for (let rad of radio) {
+        rad.addEventListener("change", () => {
+            const rating = document.getElementById("rating-value");
+            rating.innerText = rad.value;
+        });
+    }
+</script>
+{% endblock %}

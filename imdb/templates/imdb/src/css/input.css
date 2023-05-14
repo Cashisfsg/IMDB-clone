@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    min-width: 100vw;
+    background-color: black;
+
+    padding-bottom: 120px;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    color: white;
+}
+
+@layer base {
+    .container {
+        @apply mx-auto w-full max-w-6xl px-8;
+    }
+}
+
+.zebra {
+    background: repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.08) 2px,
+            transparent 2px,
+            transparent 7px
+        ),
+        transparent;
+}
+
+dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: animate-modal 0.5s ease-in-out;
+}
+
+dialog::backdrop {
+    background: linear-gradient(45deg, red, blue);
+    opacity: 0.4;
+    animation: animate-backdrop 0.5s ease-in-out;
+}
+
+#vote-for-rating input[type="radio"] {
+    display: none;
+}
+
+#vote-for-rating label:hover svg path:last-child,
+#vote-for-rating label:hover ~ label svg path:last-child,
+#vote-for-rating input[type="radio"]:checked ~ label svg path:last-child {
+    fill: rgb(87, 153, 239);
+}
+
+@keyframes animate-modal {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes animate-backdrop {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="X-UA-Compatible"
+            content="IE=edge"
+        />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <link
+            href="https://fonts.googleapis.com/css?family=Roboto:100,300,regular,500,700,900&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href={% static "imdb/css/index.css" %}/>
+        <title>{% block title %}{% endblock %}</title>
+        <link
+            rel="shortcut icon"
+            href="{% static 'imdb/img/favicon.png' %}"
+            type="image/x-icon"
+        />
+        <script
+            src="{% static 'imdb/js/index.js' %}"
+            defer
+        ></script>
+        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+        <!-- Don't use this in production: -->
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    </head>
+    <body>
+        <header class="container flex h-12 items-center px-3">
+            <nav class="flex">
+                <a
+                    class="px-3"
+                    href="{% url 'imdb:index' %}"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="64"
+                        height="32"
+                        viewBox="0 0 64 32"
+                        version="1.1"
+                    >
+                        <g fill="#F5C518">
+                            <rect
+                                x="0"
+                                y="0"
+                                width="100%"
+                                height="100%"
+                                rx="4"
+                            ></rect>
+                        </g>
+                        <g
+                            transform="translate(8.000000, 7.000000)"
+                            fill="#000000"
+                            fill-rule="nonzero"
+                        >
+                            <polygon points="0 18 5 18 5 0 0 0"></polygon>
+                            <path
+                                d="M15.6725178,0 L14.5534833,8.40846934 L13.8582008,3.83502426 C13.65661,2.37009263 13.4632474,1.09175121 13.278113,0 L7,0 L7,18 L11.2416347,18 L11.2580911,6.11380679 L13.0436094,18 L16.0633571,18 L17.7583653,5.8517865 L17.7707076,18 L22,18 L22,0 L15.6725178,0 Z"
+                            ></path>
+                            <path
+                                d="M24,18 L24,0 L31.8045586,0 C33.5693522,0 35,1.41994415 35,3.17660424 L35,14.8233958 C35,16.5777858 33.5716617,18 31.8045586,18 L24,18 Z M29.8322479,3.2395236 C29.6339219,3.13233348 29.2545158,3.08072342 28.7026524,3.08072342 L28.7026524,14.8914865 C29.4312846,14.8914865 29.8796736,14.7604764 30.0478195,14.4865461 C30.2159654,14.2165858 30.3021941,13.486105 30.3021941,12.2871637 L30.3021941,5.3078959 C30.3021941,4.49404499 30.272014,3.97397442 30.2159654,3.74371416 C30.1599168,3.5134539 30.0348852,3.34671372 29.8322479,3.2395236 Z"
+                            ></path>
+                            <path
+                                d="M44.4299079,4.50685823 L44.749518,4.50685823 C46.5447098,4.50685823 48,5.91267586 48,7.64486762 L48,14.8619906 C48,16.5950653 46.5451816,18 44.749518,18 L44.4299079,18 C43.3314617,18 42.3602746,17.4736618 41.7718697,16.6682739 L41.4838962,17.7687785 L37,17.7687785 L37,0 L41.7843263,0 L41.7843263,5.78053556 C42.4024982,5.01015739 43.3551514,4.50685823 44.4299079,4.50685823 Z M43.4055679,13.2842155 L43.4055679,9.01907814 C43.4055679,8.31433946 43.3603268,7.85185468 43.2660746,7.63896485 C43.1718224,7.42607505 42.7955881,7.2893916 42.5316822,7.2893916 C42.267776,7.2893916 41.8607934,7.40047379 41.7816216,7.58767002 L41.7816216,9.01907814 L41.7816216,13.4207851 L41.7816216,14.8074788 C41.8721037,15.0130276 42.2602358,15.1274059 42.5316822,15.1274059 C42.8031285,15.1274059 43.1982131,15.0166981 43.281155,14.8074788 C43.3640968,14.5982595 43.4055679,14.0880581 43.4055679,13.2842155 Z"
+                            ></path>
+                        </g>
+                    </svg>
+                </a>
+                <button
+                    id="burger-menu-button"
+                    class="flex items-center gap-1 px-4"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        role="presentation"
+                    >
+                        <path
+                            fill="none"
+                            d="M0 0h24v24H0V0z"
+                        ></path>
+                        <path
+                            d="M4 18h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zm0-5h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zM3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1z"
+                        ></path>
+                    </svg>
+                    <span class="font-medium">Menu</span>
+                </button>
+            </nav>
+            <form
+                class="relative mx-2 flex flex-auto gap-4 rounded bg-white focus:border-orange"
+                id="search-form"
+                method="post"
+                action="{% url 'imdb:search-list' %}?url={{ request.path }}"
+                autocomplete="off"
+            >
+                {% csrf_token %}
+                <input
+                    class="w-full rounded py-[5px] px-2 text-sm text-[rgba(0,0,0,.87)] outline-none"
+                    type="search"
+                    id="query-field"
+                    name="query"
+                    placeholder="Search IMDb"
+                    required
+                />
+                <button
+                    id="search-button"
+                    type="submit"
+                    class="px-3"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="gray"
+                        role="presentation"
+                    >
+                        <path
+                            fill="none"
+                            d="M0 0h24v24H0V0z"
+                        ></path>
+                        <path
+                            d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                        ></path>
+                    </svg>
+                </button>
+                <ul
+                    class="absolute top-[calc(100%+4px)] min-w-[320px] rounded bg-black-26"
+                    id="search-results-container"
+                ></ul>
+            </form>
+            <!-- <script
+                type="text/babel"
+                data-type="module"
+                src="{% static 'imdb/jsx/components/Fetch.js' %}"
+                crossorigin
+            >
+                const container = document.getElementById("search-results-container");
+                const root = ReactDOM.createRoot(container);
+                root.render(
+                        <h1>dadas</h1>
+                );
+            </script> -->
+            <script
+                type="text/babel"
+                crossorigin
+            >
+                const debounce = (callback, timeout = 1000) => {
+                    let timer;
+                    return function (...args) {
+                        const context = this;
+                        if (timer) clearTimeout(timer);
+                        timer = setTimeout(() => {
+                            timer = null;
+                            callback.apply(context, args);
+                        }, 3000);
+                    };
+                };
+
+                class SearchList extends React.Component {
+                    constructor(props) {
+                        super(props);
+                        this.state = { movies: [], error: undefined };
+                        this.fetchData = this.fetchData.bind(this);
+                        this.debounce = this.debounce.bind(this);
+                    }
+
+                    fetchData = async query => {
+                        try {
+                            const response = await fetch(
+                                `http://localhost:8001/imdb/search?query=${query}`
+                            );
+                            const data = await response.json();
+                            this.setState({ movies: data?.movies });
+                        } catch (error) {}
+                    };
+
+                    debounce = (callback, timeout = 1000) => {
+                        let timer;
+                        return function (...args) {
+                            const context = this;
+                            if (timer) clearTimeout(timer);
+                            timer = setTimeout(() => {
+                                timer = null;
+                                callback.apply(context, args);
+                            }, 3000);
+                        };
+                    };
+
+                    componentDidMount() {
+                        const inputQuery =
+                            document.getElementById("query-field");
+                        let timer;
+                        inputQuery.addEventListener("input", e => {
+                            this.debounce(this.fetchData(e.target.value))();
+                        });
+                    }
+
+                    MovieList = () => {
+                        return this.state.movies.map(movie => (
+                            <li
+                                key={movie?.id}
+                                className="hover:bg-[rgba(255,255,255,.1) ] border-b-2 px-4 py-2 last:border-none"
+                            >
+                                <a
+                                    href={`http://localhost:8001/imdb/movie/${movie.slug}`}
+                                >
+                                    <article className="flex items-center gap-4">
+                                        <img
+                                            className=" h-20 w-14"
+                                            src={`http://localhost:8001/media/${movie.poster}`}
+                                            alt={movie.title}
+                                        />
+                                        <section className="flex flex-col gap-1">
+                                            <h3 className="text-base font-medium tracking-wider">
+                                                {movie.title}
+                                            </h3>
+                                            <p className="text-xs">
+                                                {movie.year}
+                                            </p>
+                                            <p className="text-xs">
+                                                {movie.director__first}
+                                                &nbsp;
+                                                {movie.director__last}
+                                            </p>
+                                        </section>
+                                    </article>
+                                </a>
+                            </li>
+                        ));
+                    };
+
+                    render() {
+                        return <div>{this.MovieList()}</div>;
+                    }
+                }
+
+                const container = document.getElementById(
+                    "search-results-container"
+                );
+                const root = ReactDOM.createRoot(container);
+                root.render(
+                    <React.StrictMode>
+                        <SearchList />
+                    </React.StrictMode>
+                );
+            </script>
+            {% if user.is_authenticated %}
+            <a
+                href="#"
+                class="flex select-none items-center justify-center gap-2 whitespace-nowrap rounded px-3 py-2 font-medium hover:bg-black-26"
+            >
+                <svg
+                    width="24"
+                    height="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="ipc-icon ipc-icon--watchlist ipc-btn__icon ipc-btn__icon--pre"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    role="presentation"
+                >
+                    <path
+                        d="M17 3c1.05 0 1.918.82 1.994 1.851L19 5v16l-7-3-7 3V5c0-1.05.82-1.918 1.851-1.994L7 3h10zm-4 4h-2v3H8v2h3v3h2v-3h3v-2h-3V7z"
+                        fill="white"
+                    ></path>
+                </svg>
+                Watchlist
+            </a>
+            <details class="relative">
+                <summary
+                    class="flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded px-3 py-2 font-medium hover:bg-black-26"
+                >
+                    {% if user.addon.avatar %}
+                    <img
+                        class="h-6 w-6 rounded-full"
+                        src="{{ user.addon.avatar.url }}"
+                        alt="{{ user }}"
+                    />
+
+                    {% else %}
+                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 70 70"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="35"
+                            cy="35"
+                            r="35"
+                            fill="white"
+                        />
+                        <path
+                            d="M34.9524 70C15.6305 70.0018 -0.0753237 54.2415 0.000271752 34.9298C0.0776671 15.5786 15.7241 -0.0341429 35.0046 5.60763e-05C54.3588 0.036055 69.944 15.593 69.9998 34.937C70.0574 54.3045 54.3678 70 34.9524 70ZM11.2442 57.5552C24.1494 71.3212 46.1603 71.0656 58.7145 57.5642C58.4499 57.2582 58.198 56.9306 57.9082 56.639C56.6014 55.325 55.0535 54.3369 53.3814 53.5917C51.1964 52.6179 48.9447 51.7917 46.738 50.8666C45.6923 50.4274 44.6466 49.9648 43.6638 49.4032C42.5425 48.7642 41.8153 47.8031 41.7829 46.4315C41.7577 45.3245 41.7217 44.2158 41.6713 43.1088C41.6372 42.3888 41.8333 41.7714 42.2815 41.1936C43.9842 38.9887 44.8716 36.485 44.8878 33.6915C44.8896 33.2523 45.0731 32.9859 45.4043 32.7249C46.1423 32.1399 46.7974 31.4505 46.9954 30.4984C47.2078 29.476 47.359 28.4356 47.4562 27.3935C47.5354 26.5457 47.4436 25.7177 46.3655 25.6295C46.5167 24.3497 46.7164 23.1672 46.7866 21.9792C46.927 19.5529 46.6642 17.1824 45.4421 15.0152C44.3892 13.1487 42.8017 12.1245 40.631 12.0417C40.343 12.0309 40.0479 11.9427 39.7725 11.8473C37.0222 10.9023 34.182 10.6125 31.3508 11.1777C25.8395 12.2757 22.5421 17.0132 23.2045 22.6524C23.3197 23.6262 23.505 24.5909 23.6688 25.6349C22.9129 25.6745 22.4683 26.1101 22.4827 26.8301C22.5223 28.9702 22.5619 31.1337 24.4554 32.6439C24.9288 33.0219 25.0494 33.4971 25.098 34.0551C25.1663 34.856 25.2581 35.6588 25.3859 36.4526C25.6847 38.3173 26.7719 39.8059 27.7474 41.352C27.9886 41.7354 28.1848 42.2178 28.2028 42.6624C28.2514 43.8882 28.2028 45.1175 28.1758 46.3451C28.1488 47.5763 27.5836 48.5266 26.5775 49.2088C26.1077 49.5274 25.6271 49.8496 25.1088 50.0692C23.8704 50.5966 22.6123 51.0826 21.3524 51.5559C18.7425 52.5387 16.1579 53.5719 13.8378 55.1594C12.8659 55.8236 11.9677 56.5634 11.2442 57.5552Z"
+                            fill="#D0CFCF"
+                        />
+                    </svg>
+                    {% endif %} {{ user }}
+                </summary>
+                <ul
+                    class="absolute top-[calc(100%+8px)] right-0 rounded bg-black-18 py-2"
+                >
+                    <li
+                        class="whitespace-nowrap rounded px-4 py-2 font-medium hover:bg-black-26"
+                    >
+                        <a href="#">Your watchlist</a>
+                    </li>
+                    <li
+                        class="whitespace-nowrap rounded px-4 py-2 font-medium hover:bg-black-26"
+                    >
+                        <a href="#">Account settings</a>
+                    </li>
+                    <li
+                        class="whitespace-nowrap rounded px-4 py-2 font-medium hover:bg-black-26"
+                    >
+                        <a
+                            href="{% url 'imdb:user-sign-out' %}?url={{ request.path }}"
+                        >
+                            Log out
+                        </a>
+                    </li>
+                </ul>
+            </details>
+            {% else %}
+
+            <button
+                id="sign-in-button"
+                class="flex cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap rounded px-4 py-2 font-medium hover:bg-black-26"
+            >
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 30 30"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M25 26.25V23.75C25 22.4239 24.4732 21.1521 23.5355 20.2145C22.5978 19.2768 21.3261 18.75 20 18.75H10C8.67392 18.75 7.40215 19.2768 6.46447 20.2145C5.52678 21.1521 5 22.4239 5 23.75V26.25"
+                        stroke="white"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M15 13.75C17.7614 13.75 20 11.5114 20 8.75C20 5.98858 17.7614 3.75 15 3.75C12.2386 3.75 10 5.98858 10 8.75C10 11.5114 12.2386 13.75 15 13.75Z"
+                        stroke="white"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+                Sign in
+            </button>
+
+            {% endif %}
+            <!-- <script>
+                    console.log("query");
+                    const searchForm = document.getElementById("search-form");
+                    const searchButton = document.getElementById("search-button");
+                    const query = document.querySelector("input[type=search]");
+
+                    function debounce_leading(func, timeout = 300) {
+                        let timer;
+                        return (...args) => {
+                            clearTimeout(timer);
+                            timer = setTimeout(() => {
+                                func.apply(this, args);
+                            }, timeout);
+                        };
+                    }
+
+                    function fetchData() {
+                        console.log("fetching data...");
+                        fetch(`{% url 'imdb:search' %}?query=${query.value}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+
+                                if (
+                                    searchForm.contains(
+                                        searchForm.querySelector("ul")
+                                    )
+                                ) {
+                                    searchForm.querySelector("ul").remove();
+                                    console.log("yes");
+                                    console.log(searchForm.querySelector("ul"));
+                                }
+                                const ul = document.createElement("ul");
+                                for (let movie of data?.movies) {
+                                    const li = document.createElement("li");
+                                    const a = document.createElement("a");
+                                    const title = document.createElement("p");
+                                    const year = document.createElement("p");
+                                    const first = document.createElement("span");
+                                    const last = document.createElement("span");
+
+                                    title.innerText = movie?.title;
+                                    a.appendChild(title);
+                                    year.innerText = movie?.year;
+                                    a.appendChild(year);
+                                    first.innerText = movie?.director__first;
+                                    a.appendChild(first);
+                                    last.innerText = movie?.director__last;
+                                    a.appendChild(last);
+                                    // a.href = `http://localhost:8001/imdb/movie/${movie.slug}/`;
+                                    a.href = `http://localhost:8001/imdb/movie/${movie.slug}/`;
+                                    li.appendChild(a);
+                                    ul.appendChild(li);
+                                }
+
+                                // p.innerText = data?.movies[0]?.director;
+                                // div.appendChild(p);
+
+                                ul.classList.add(
+                                    "absolute",
+                                    "text-red-500",
+                                    "top-full"
+                                );
+
+                                searchForm.appendChild(ul);
+                            });
+                    }
+
+                    const processChange = debounce_leading(() => fetchData());
+            </script>
+            -->
+        </header>
+        <aside
+            id="burger-menu"
+            class="fixed top-0 left-0 z-10 h-[100vh] w-[280px] -translate-x-full bg-[#1f1f1f] transition-transform duration-300 ease-in-out"
+        >
+            <div class="zebra flex h-14 w-full items-center justify-end p-1">
+                <button
+                    id="burger-close-button"
+                    class="h-12 w-12 rounded-full hover:bg-red-400"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        class="mx-auto"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        role="presentation"
+                    >
+                        <path
+                            fill="none"
+                            d="M0 0h24v24H0V0z"
+                        ></path>
+                        <path
+                            d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+            <ul>
+                <li class="flex items-center justify-between px-4 py-2">
+                    <a
+                        href="{% url 'imdb:movie-list' %}"
+                        class="flex w-fit items-center gap-3"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            role="presentation"
+                        >
+                            <path
+                                fill="none"
+                                d="M0 0h24v24H0V0z"
+                            ></path>
+                            <path
+                                d="M18 4v1h-2V4c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v1H6V4c0-.55-.45-1-1-1s-1 .45-1 1v16c0 .55.45 1 1 1s1-.45 1-1v-1h2v1c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-1h2v1c0 .55.45 1 1 1s1-.45 1-1V4c0-.55-.45-1-1-1s-1 .45-1 1zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"
+                            ></path>
+                        </svg>
+                        <span>Movies</span>
+                    </a>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="rgb(87, 153, 239)"
+                        role="presentation"
+                    >
+                        <path
+                            d="M16 16.667H8A.669.669 0 0 1 7.333 16V8c0-.367.3-.667.667-.667h3.333c.367 0 .667-.3.667-.666C12 6.3 11.7 6 11.333 6h-4C6.593 6 6 6.6 6 7.333v9.334C6 17.4 6.6 18 7.333 18h9.334C17.4 18 18 17.4 18 16.667v-4c0-.367-.3-.667-.667-.667-.366 0-.666.3-.666.667V16c0 .367-.3.667-.667.667zm-2.667-10c0 .366.3.666.667.666h1.727L9.64 13.42a.664.664 0 1 0 .94.94l6.087-6.087V10c0 .367.3.667.666.667.367 0 .667-.3.667-.667V6h-4c-.367 0-.667.3-.667.667z"
+                        ></path>
+                    </svg>
+                </li>
+                <li class="flex items-center justify-between px-4 py-2">
+                    <a
+                        href="{% url 'imdb:director-list' %}"
+                        class="flex w-fit items-center gap-3"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            role="presentation"
+                        >
+                            <path
+                                fill="none"
+                                d="M0 0h24v24H0V0z"
+                            ></path>
+                            <path
+                                d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V18c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05.02.01.03.03.04.04 1.14.83 1.93 1.94 1.93 3.41V18c0 .35-.07.69-.18 1H22c.55 0 1-.45 1-1v-1.5c0-2.33-4.67-3.5-7-3.5z"
+                            ></path>
+                        </svg>
+                        <span>Directors</span>
+                    </a>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="rgb(87, 153, 239)"
+                        role="presentation"
+                    >
+                        <path
+                            d="M16 16.667H8A.669.669 0 0 1 7.333 16V8c0-.367.3-.667.667-.667h3.333c.367 0 .667-.3.667-.666C12 6.3 11.7 6 11.333 6h-4C6.593 6 6 6.6 6 7.333v9.334C6 17.4 6.6 18 7.333 18h9.334C17.4 18 18 17.4 18 16.667v-4c0-.367-.3-.667-.667-.667-.366 0-.666.3-.666.667V16c0 .367-.3.667-.667.667zm-2.667-10c0 .366.3.666.667.666h1.727L9.64 13.42a.664.664 0 1 0 .94.94l6.087-6.087V10c0 .367.3.667.666.667.367 0 .667-.3.667-.667V6h-4c-.367 0-.667.3-.667.667z"
+                        ></path>
+                    </svg>
+                </li>
+            </ul>
+        </aside>
+        <main class="container">
+            {% block content %}{% endblock %}
+            <dialog
+                id="sign-in-popup"
+                class="w-full max-w-md rounded-lg bg-black-26 px-8 pt-3 pb-8 text-white"
+            >
+                <h2 class="mb-3 flex items-end justify-between text-4xl">
+                    Sign in
+                    <button
+                        id="close-modal"
+                        class="h-12 w-12 rounded-full hover:bg-red-400"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            class="mx-auto"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            role="presentation"
+                        >
+                            <path
+                                fill="none"
+                                d="M0 0h24v24H0V0z"
+                            ></path>
+                            <path
+                                d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"
+                            ></path>
+                        </svg>
+                    </button>
+                </h2>
+                <hr class="mb-3 border-2 border-double border-orange" />
+                <form
+                    action="{% url 'imdb:user-sign-in' %}?url={{ request.path }}"
+                    method="post"
+                >
+                    {% csrf_token %}
+                    <label class="mb-3 flex flex-col gap-3 text-lg text-orange">
+                        User name <br />
+                        <input
+                            class="w-full rounded py-2 px-4 text-black-26 outline-none"
+                            name="username"
+                        />
+                    </label>
+                    <label
+                        class="mb-10 flex flex-col gap-3 text-lg text-orange"
+                    >
+                        Password <br />
+                        <input
+                            type="password"
+                            name="password"
+                            class="w-full justify-center rounded py-2 px-4 text-black-26 outline-none"
+                        />
+                    </label>
+                    <button
+                        class="w-full rounded bg-orange py-2 px-4 text-lg text-black-26 hover:border-[1px] hover:border-orange hover:bg-transparent hover:text-orange"
+                    >
+                        Sign in
+                    </button>
+                </form>
+            </dialog>
+        </main>
+    </body>
+</html>
